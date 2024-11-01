@@ -153,17 +153,25 @@ function itemRemove(index) { // receives the index # from the button press.
 /**** THE FOLLOWING FUNCTIONS SAVE THE LIST TO LOCAL STORAGE AND LOAD THE LIST ON WINDOW LOAD ****/
 
 function saveList() {
-    let checkboxStates = []; // creates an empty array to save the check box states and holdes them in the 'checkboxStates' variable.
-    document.querySelectorAll('.listBox').forEach((checkbox, index) => { // looks at everything with the id of '.listBox' which is our checkboxes.
-        checkboxStates[index] = checkbox.checked; // if the checkbox is checked, it adds it's index to the 'checkboxStates' variable.
-    });
-    localStorage.setItem('checkboxStates', JSON.stringify(checkboxStates)); // This saves the 'checkboxStates' array as string data using the JSON.stringify() function.
-    localStorage.setItem('savedList', JSON.stringify(items)); // takes the 'items' array, stringifies it into JSON data, names it 'savedList' for saving into localStorage.
+    const savedData = items.map((item, index) => ({ // creates a constant called 'savedData' that holds a map() of the 'items' array that contains the text 'item' and 'index' position
+        task: item, // this is the text value of the task and for each item is assigned the JSON key of 'task' and the value is the 'item'
+        isChecked: document.querySelectorAll('#outputList input[type="checkbox"]')[index].checked // this jSON ke is 'isChecked' and stores whether the checkbox is checked
+    }));
+    localStorage.setItem('savedList', JSON.stringify(savedData)); // takes the 'savedData' constant which holds the data from our 'items' array and checkbox status's, stringifies it into JSON data, names it 'savedList' for saving into localStorage.
     //alert("List Saved!!!"); // puts up an alert box popup alerting that the list was saved.
 
 };
 
 function loadList() {
+    const savedData = JSON.parse(localStorage.getItem('savedList')); // This looks at local storage, uses the 'getItem()' function and loads 'savedList', parses the JSON and stores it in the 'savedData' constant.
+    if (savedData) {
+        savedData.forEach(({ task, isChecked })=> {
+            items.push(task);
+            addItem(task, isChecked); // pass the 'task' and checked stat using 'isChecked' to 'addItem()' function
+        });
+    }
+    
+    /***********THE FOLLOWING SECTION WAS MY OLD CODE ATTEMPT TO GET CHECKBOX STATES WORKING  ******************
     // First section loads the check box data, it's working, but there's nothing in the saved checkbox array from the saveList() function.
     let checkboxStates = JSON.parse(localStorage.getItem('checkboxStates')); // Looks at the JSON and gets the 'checkboxStates' item.
     console.log('This is our checkboxStates array on load ->', checkboxStates);
@@ -184,7 +192,9 @@ function loadList() {
         addItem(listItem); // Call the 'addItem()' function with each 'listItem' from 'savedList'.
     });
 }
+********************* END OF OLD CODE ATTEMPT TO GET CHECKBOX STATES WORKING **********************************/
 };
+
 
 // Load the list when the page is opened
 window.onload = loadList; // when the window is opened, run the 'loadList()' function.
