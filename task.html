@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link rel="stylesheet" href="task.css">
+</head>
+<body>
+    <h1>The Task List!</h1>
+    <div class="input-container">
+        <label for="task">Type a task and press Enter, or click the button.</label>
+        <br>
+        <input class="textbox" type="text" id="task" class="input-field" placeholder="Enter a task">
+    </div>
+
+    <button class="button" onclick="textSubmit()">Submit Task</button>
+
+    <div class="task-list">
+        <h2>Your Great List-O-Tasks!</h2>
+        <ul id="outputList">
+           <!-- <input type="checkbox" name="listBox" value="complete">  I USED THAT TAG TO TEST MY CHECKBOX FORMAT -->
+
+        </ul>
+
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>

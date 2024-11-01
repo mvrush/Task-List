@@ -1,0 +1,26 @@
+h1, h2, h3 {
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+h1 {
+    font-size: 2.3rem; /* use rem for auto resizing on different screen sizes */
+}
+
+h2 {
+    text-decoration: underline;
+}
+
+li {
+    list-style-type: none; /* removes the bullet or number from the <li> item */
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    margin-bottom: 0.2rem;   /* use margin instead of padding if you just want space between elements. Padding adds to the element size making it have more clickable or background area if you want that. */  
+}
+
+.textbox {
+    margin: 0.5rem 0rem; /* The first value is top-bottom, second value is left-right. Can use 3 or 4 values to be more specific on each side. */
+}
+
+/* the ':checked' psuedo-class targets the checked state of checkboxes. */
+input[type="checkbox"]:checked ~ span { /* looks at any 'input' tags and finds 'type=checkbox' then uses the ':checked' psuedo class to view the state of the checkbox, if checked, it adds a 'line-through' to the text in the following '<span>' because the '~' is a general sibling selector, the '<span>' is the sibling of the checkbox. */
+    text-decoration: line-through;
+}
