@@ -1,3 +1,6 @@
+/************* TO DO **************/
+// Need to create functionality in the 'itemRemove()' function to save the checkbox state for each item and apply that state when an item is removed
+
 console.log('If you can see this, your script loaded. SHOUT HOORAY!!');
 /***** MASTER VARIABLES (use 'const' instead of 'let' for full page scope, it's not necessary, but good practice.) *****/
 const items = []; // An empty array that will hold our list items. It can be a 'const' which protects it and still allows you to modify that contents of the array.
