@@ -35,6 +35,7 @@ function textSubmit() {
     }
     else {
         items.push(newtask); // adds each 'newtask' text into the 'items' array.
+
     }
 
     addItem(newtask); //calls the 'addItem()' function passing the data held in 'newtask' to that function.
@@ -142,15 +143,17 @@ function itemRemove(index) { // receives the index # from the button press.
         outputList.removeChild(outputList.firstChild); // Says that while there is a 'firstChild' in the outputList, remove that child using 'removeChild'.
     }
 
+    
     // code to loop through the 'items' array and add each item using the 'addItem()' function above to output the new list to the screen goes here. BUT...
     // ...it won't work because the array only had one item taken out, so there are 2 items remaining in the array, and then it loops through the entire array and adds everything remaining to the existing array, creating a lot of confusion.
     // So I need to handle the way the array is added to differently, or maybe clear the array before adding the items, or something.
     // SOLUTION 1: I need to somehow tweek the 'addItem()' function adding a logic to check to see if the element already exists in the array, and if it does, don't add it to the array. That way it will just output to the DOM without adding to the array.
     // SOLUTION 2: Add the logic here to simply loop through the array now that the item is removed and output whatever remains in the array.
-    items.forEach(listItem => // says look at the 'items' array and for each item, append it to the DOM.
+    items.forEach((listItem, idx) => { // says look at the 'items' array and for each 'listItem', send it to the 'addItem()' function.
+        let isChecked = document.querySelectorAll('#outputList input[type="checkbox"]')[idx]?.checked || false;
         //document.getElementById("outputList").appendChild(listItem) //NOTE: Used to look at each Node item and append it to the Dom, instead I call the 'addItem()' function on the next line.
-        addItem(listItem)
-    ); 
+        addItem(listItem, isChecked);
+    });
 };
 
 /**** THE FOLLOWING FUNCTIONS SAVE THE LIST TO LOCAL STORAGE AND LOAD THE LIST ON WINDOW LOAD ****/
@@ -158,7 +161,7 @@ function itemRemove(index) { // receives the index # from the button press.
 function saveList() {
     const savedData = items.map((item, index) => ({ // creates a constant called 'savedData' that holds a map() of the 'items' array that contains the text 'item' and 'index' position
         task: item, // this is the text value of the task and for each item is assigned the JSON key of 'task' and the value is the 'item'
-        isChecked: document.querySelectorAll('#outputList input[type="checkbox"]')[index].checked // this jSON ke is 'isChecked' and stores whether the checkbox is checked
+        isChecked: document.querySelectorAll('#outputList input[type="checkbox"]')[index].checked // this jSON key is 'isChecked' and stores whether the checkbox is checked which is obtained by queriyng everything in the 'outputList'.
     }));
     localStorage.setItem('savedList', JSON.stringify(savedData)); // takes the 'savedData' constant which holds the data from our 'items' array and checkbox status's, stringifies it into JSON data, names it 'savedList' for saving into localStorage.
     //alert("List Saved!!!"); // puts up an alert box popup alerting that the list was saved.
@@ -167,6 +170,7 @@ function saveList() {
 
 function loadList() {
     const savedData = JSON.parse(localStorage.getItem('savedList')); // This looks at local storage, uses the 'getItem()' function and loads 'savedList', parses the JSON and stores it in the 'savedData' constant.
+    console.log("This is our savedData ->", savedData);
     if (savedData) {
         savedData.forEach(({ task, isChecked })=> {
             items.push(task);
