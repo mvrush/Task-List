@@ -1,9 +1,14 @@
 /************* TO DO **************/
-// Need to create functionality in the 'itemRemove()' function to save the checkbox state for each item and apply that state when an item is removed
+// The addItem() function is placing another itemStates array item when it re-adds items after the removeItem() function is pressed.
+// So I need to fix something in line 109, or how line 109 is being used to populate the 'itemStates' array.
+// For example, if I have 2 items and i delete 1, the itemStates array has one state for the remaining item.
+// But when it re-adds that 1 item using the addItem() function, it adds it again into the itemStates array, resulting in 2 states when there's only 1 item, messing everything up.
+// I somehow have to tell it, if there is already a state, to not re-add it, but not sure how to do that.
 
 console.log('If you can see this, your script loaded. SHOUT HOORAY!!');
 /***** MASTER VARIABLES (use 'const' instead of 'let' for full page scope, it's not necessary, but good practice.) *****/
 const items = []; // An empty array that will hold our list items. It can be a 'const' which protects it and still allows you to modify that contents of the array.
+const itemStates = []; // Am empty array that will hold our Checkbox states for when an item is deleted and the list is repopulated.
 
 // The following event listeners listen for the Enter key to be pressed while the Input box is in focus. If Enter is pressed, it calls the 'textSubmit()' function below. This allows the user to simply press the enter key instead of pressing the 'Submit' button.
 
@@ -104,6 +109,8 @@ function addItem(newtask, isChecked = false) { // Function takes 2 arguments, 'n
     
     document.getElementById("outputList").appendChild(listItem); // This line takes the listItem and appends it to the 'outputList' located in the DOM.
 
+    itemStates.push(isChecked); // Add the checkbox state to the 'itemStates' array.
+    console.log("This is the 'itemStates' array ->", itemStates);
     /*** THE NEXT LINE CALLED THE OLD addItem() function listed below  ****/
     //addItem(listItem); // Call the 'addItem()' function below, passing the value of 'listItem' to that function.
 
@@ -135,8 +142,9 @@ function addItem(listItem) { // receives the 'listItem' value from above.
 function itemRemove(index) { // receives the index # from the button press.
     //alert("Remove Button Clicked Ya Dirty Ol' Ho!!!"); // Used this line to test button functionality.
     items.splice(index, 1); // uses the built-in 'splice()' function to remove 1 item at the specified index position.
-    console.log(`Item removed at index ${index}`, items); // sends a console log of the 'items' array with the item removed. I used backticks (`) to ouput the string of text that includes a template literal ${variable} to show what was held in the variable.
-    
+    console.log(`Item removed at index ${index} from items array ->`, items); // sends a console log of the 'items' array with the item removed. I used backticks (`) to ouput the string of text that includes a template literal ${variable} to show what was held in the variable.
+    itemStates.splice(index, 1); // uses the built-in 'splice()' function to remove 1 item at the specified index position from the 'itemStates' array.
+    console.log(`item removed at index ${index} from itemStates array ->`, itemStates); // console logs which index was removed from the 'itemStates' array and outputs the new array.
     // code to clear list goes here
     let outputList = document.getElementById("outputList"); // gets the <ul> by 'outputList' id and puts it in a variable called 'outputList'
     while (outputList.firstChild) { // this 'while' function will clear the list before looping through the array and adding to the list.
@@ -144,13 +152,10 @@ function itemRemove(index) { // receives the index # from the button press.
     }
 
     
-    // code to loop through the 'items' array and add each item using the 'addItem()' function above to output the new list to the screen goes here. BUT...
-    // ...it won't work because the array only had one item taken out, so there are 2 items remaining in the array, and then it loops through the entire array and adds everything remaining to the existing array, creating a lot of confusion.
-    // So I need to handle the way the array is added to differently, or maybe clear the array before adding the items, or something.
-    // SOLUTION 1: I need to somehow tweek the 'addItem()' function adding a logic to check to see if the element already exists in the array, and if it does, don't add it to the array. That way it will just output to the DOM without adding to the array.
-    // SOLUTION 2: Add the logic here to simply loop through the array now that the item is removed and output whatever remains in the array.
-    items.forEach((listItem, idx) => { // says look at the 'items' array and for each 'listItem', send it to the 'addItem()' function.
-        let isChecked = document.querySelectorAll('#outputList input[type="checkbox"]')[idx]?.checked || false;
+    // The following loops through the 'items' array using the built-in 'forEach()' function and grabs the index 'idx' of each item, then grabs the idx of each 'itemStates' array item and sends them to the 'addItem()' function.
+    items.forEach((listItem, idx) => { // says look at the 'items' array and for each 'listItem', send it to the 'addItem()' function along with it's index position, specified by my variable 'idx'.
+        let isChecked = itemStates[idx]; // Get the saved checkbox state at the specified index 'idx' position and hold it in the 'isChecked' variable.
+        console.log(`Index: ${idx}, Item: ${listItem}, Checked: ${isChecked}`) // Debugging output to make sure everything looks right.
         //document.getElementById("outputList").appendChild(listItem) //NOTE: Used to look at each Node item and append it to the Dom, instead I call the 'addItem()' function on the next line.
         addItem(listItem, isChecked);
     });
