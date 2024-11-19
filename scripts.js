@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     
 });
 
-function textSubmit() {
+function textSubmit(isChecked = false) { // I gave the 'textSubmit()' function an argument of 'isChecked' and I made the default = 'false'. This will make every new textSubmit add a value to the 'itemStates' array set to false.
     console.log('this is the textSubmit function.');
     let newtask = document.getElementById("task").value.trim(); // You need .value to pull the text out of the input box. The trim() function removes white space before and after text.
     console.log("This is the newtask ->", newtask);
@@ -40,10 +40,11 @@ function textSubmit() {
     }
     else {
         items.push(newtask); // adds each 'newtask' text into the 'items' array.
+        itemStates.push(isChecked); // add an isChecked = false into the 'isChecked' array.
 
     }
 
-    addItem(newtask); //calls the 'addItem()' function passing the data held in 'newtask' to that function.
+    addItem(newtask, isChecked); //calls the 'addItem()' function passing the data held in 'newtask' to that function.
 };
 
 // This function adds list items.
@@ -62,8 +63,15 @@ function addItem(newtask, isChecked = false) { // Function takes 2 arguments, 'n
     checkbox.name = 'listBox'; // 'name' attribute is the 'key' in a 'key/value' pair with the 'value' attribute, when sent with a form when submitted. I'm not using the form method here so it's less important.
     checkbox.value = 'complete'; // 'value' is the value that is submitted when the box is checked and the form submitted. Since I'm not using a form submission, it's not as important. I'm only using JavaScript to detect if it's checked or not.
     checkbox.id = 'listBox'; // 'id' is the unique id value that identifies an HTML element in the document. I can use the id in a JavaScript function to identify the HTML element or I can us it in CSS to apply CSS by the id.
-    checkbox.checked = isChecked; // Sets the checkbox's checked status. THIS LINE SUGGESTED BY CHAT GPT
+    checkbox.checked = isChecked; // Sets the checkbox's checked status. Gets it's value from the above passed argument in the 'addItem()' function.
 
+    checkbox.onclick = function() { // adds a function that will occur when the checkbox is clicked telling it to toggle it's value from true or false in the 'itemStates' array.
+        /***** Need to add code here that toggles the checkbox 'isChecked' value from true or false and updates it in the 'isChecked' array at it's index position ****/
+        let idx = items.indexOf(newtask); // Finds the index of the current task in the 'items' array using the built-in 'indexOf()' function, and holds it in the 'idx' variable.
+        itemStates[idx] = !itemStates[idx]; // this says, toggle the 'itemStates' value at the index 'idx' position opposite to what it's currently set when checkbox is clicked. The '!' means 'not' in this case.
+        console.log(`Checkbox ${idx} is now: ${itemStates[idx]}, and the 'itemStates' array is now ->`, itemStates); // This console logs the current state of the checbox held at whatever index 'idx' position.
+    }
+    
     // The following sets the attibutes for the button. When created it will look and act like this <button class="remove-item" id="removeItem" onclick="textSubmit()">x</button>. NOTE: it won't have 'onclick="textSubmit()" because I used a JavaScript onclick overlay on the button as shown a few lines below.
     removeButton.className = 'remove-item'; // Sets the class value for the button.
     removeButton.id = 'removeItem'; // sets the ID of the button
@@ -76,12 +84,12 @@ function addItem(newtask, isChecked = false) { // Function takes 2 arguments, 'n
     ****/
     
     // This is how to call another function using the 'onclick' parameter on the.
-   // removeButton.onclick = itemRemove; // This layers the button with an 'onclick' event that will then call the 'textSubmit()' function. Removed and replaced with the next lines.
+    /**** NOTE using the 'textContent' value to find the index of the item to be removed is bad because the text content of 2 items may be the same. ******/
     removeButton.onclick = function() { // this adds a function to find the index of the current item that the button is associated with. 'onclick' assigns an onclick event to the 'removeButton'. When button is clicked, it runs the function.
         // The next 3 lines isolate the index number of the <li> item that the <button> resides in so I can splice() it out of the array.
         //let item = this.parentNode; // looks at the parentNode of the <button> which is the indexed <li> item and gets it's index number. 'this' specifies to look at 'this button's' parentNode.
         let item = span.textContent; // This looks at the <span> associated with the <li> item and gets the text content using the built-in 'textContent' node and holds it in the 'item' variable.
-        console.log("this is the removeButton item ->,", item); // This will console.log the item that was clicked. This lets you know the button is working AND which item the button is associated with.
+        console.log("this is the removeButton item text ->,", item); // This will console.log the item that was clicked. This lets you know the button is working AND which item the button is associated with.
         /*** NOTE WE NEED TO FIND OUT HOW TO DETERMINE THE INDEX OF THE TEXT ITEM THE removeButton IS ATTACHED TO  ****/
         //let index = items.findIndex(i => i === item); // uses the built-in 'findIndex()' function to find the index of the item that the button resides in. The arrow (=>) function serves as the callback for the 'findIndex()' function. 'i === item' means the value and type of the item should match i. === is 'is equal to'.
         let index = items.indexOf(item); // uses the built-in 'indexOf()' function to find the index of of the textContent held in the 'item' variable of the 'items' array.
@@ -109,8 +117,9 @@ function addItem(newtask, isChecked = false) { // Function takes 2 arguments, 'n
     
     document.getElementById("outputList").appendChild(listItem); // This line takes the listItem and appends it to the 'outputList' located in the DOM.
 
-    itemStates.push(isChecked); // Add the checkbox state to the 'itemStates' array.
+    //itemStates.push(isChecked); // Add the checkbox state to the 'itemStates' array. REMOVED because I moved this to the 'textSubmit' function.
     console.log("This is the 'itemStates' array ->", itemStates);
+    
     /*** THE NEXT LINE CALLED THE OLD addItem() function listed below  ****/
     //addItem(listItem); // Call the 'addItem()' function below, passing the value of 'listItem' to that function.
 
@@ -140,7 +149,7 @@ function addItem(listItem) { // receives the 'listItem' value from above.
 3. loop through the array, and for each item, call the 'addItem()' function above to output it to the list.
 */
 function itemRemove(index) { // receives the index # from the button press.
-    //alert("Remove Button Clicked Ya Dirty Ol' Ho!!!"); // Used this line to test button functionality.
+    //alert("Remove Button Clicked!!!"); // Used this line to test button functionality.
     items.splice(index, 1); // uses the built-in 'splice()' function to remove 1 item at the specified index position.
     console.log(`Item removed at index ${index} from items array ->`, items); // sends a console log of the 'items' array with the item removed. I used backticks (`) to ouput the string of text that includes a template literal ${variable} to show what was held in the variable.
     itemStates.splice(index, 1); // uses the built-in 'splice()' function to remove 1 item at the specified index position from the 'itemStates' array.
@@ -169,16 +178,17 @@ function saveList() {
         isChecked: document.querySelectorAll('#outputList input[type="checkbox"]')[index].checked // this jSON key is 'isChecked' and stores whether the checkbox is checked which is obtained by queriyng everything in the 'outputList'.
     }));
     localStorage.setItem('savedList', JSON.stringify(savedData)); // takes the 'savedData' constant which holds the data from our 'items' array and checkbox status's, stringifies it into JSON data, names it 'savedList' for saving into localStorage.
-    //alert("List Saved!!!"); // puts up an alert box popup alerting that the list was saved.
+    // alert("List Saved!!!"); // puts up an alert box popup alerting that the list was saved.
 
 };
 
 function loadList() {
     const savedData = JSON.parse(localStorage.getItem('savedList')); // This looks at local storage, uses the 'getItem()' function and loads 'savedList', parses the JSON and stores it in the 'savedData' constant.
     console.log("This is our savedData ->", savedData);
-    if (savedData) {
-        savedData.forEach(({ task, isChecked })=> {
-            items.push(task);
+    if (savedData) { // if it finds 'savedData' on the local hard drive, it runs the following lines
+        savedData.forEach(({ task, isChecked })=> { // looks at the 'saveData' and forEach() 'task' and 'isChecked' item, it pushes them into their respective arrays and then returns their values to the 'addItem()' function.
+            items.push(task); // this uses 'push()' on each 'task' and puts it into the 'items' array.
+            itemStates.push(isChecked); // this uses 'push()' on each 'isChecked' status for each 'tast' and puts it into the 'itemStates' array.
             addItem(task, isChecked); // pass the 'task' and checked stat using 'isChecked' to 'addItem()' function
         });
     }
